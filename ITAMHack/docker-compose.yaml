@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  backend:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-freak}:${DB_PASSWORD:-freak}@postgres:5432/${DB_NAME:-freak}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./alembic:/app/alembic
+      - ./frontend:/app/frontend
+  postgres:
+    image: postgres:17.0
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DB_USER:-freak}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-freak}
+      POSTGRES_DB: ${DB_NAME:-LINK_SERVICE_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-freak} -d ${DB_NAME:-freak}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:7-alpine
+    container_name: itamhack-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+
+
+volumes:
+  redis_data:
+  postgres_data:
+
+
