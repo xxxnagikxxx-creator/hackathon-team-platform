@@ -1,8 +1,10 @@
-from re import fullmatch
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from backend.models import User
+
+async def all_users_info(session: AsyncSession) -> list[User]:
+    result = await session.execute(select(User))
+    return result.scalars().all()
 
 async def get_user_info_by_telegram_id(session: AsyncSession, telegram_id: str) -> User | None:
 

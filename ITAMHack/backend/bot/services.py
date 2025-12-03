@@ -2,10 +2,10 @@ from backend.models import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-async def create_user(session: AsyncSession, telegram_id: int, username: str, fullname: str) -> User:
+async def create_user(session: AsyncSession, telegram_id: str, username: str, fullname: str) -> User:
     new_user = User(
         username=username,
-        telegram_id=telegram_id,
+        telegram_id=str(telegram_id),
         fullname=fullname,
     )
     session.add(new_user)
@@ -13,10 +13,9 @@ async def create_user(session: AsyncSession, telegram_id: int, username: str, fu
     await session.refresh(new_user)
     return new_user
 
-async def get_user_by_telegram_id(session: AsyncSession, telegram_id: int) -> User | None:
-
+async def get_user_by_telegram_id(session: AsyncSession, telegram_id: str) -> User | None:
     result = await session.execute(
-        select(User).where(User.telegram_id == telegram_id)
+        select(User).where(User.telegram_id == str(telegram_id))
     )
     user = result.scalars().first()
     return user

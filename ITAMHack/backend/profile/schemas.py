@@ -1,5 +1,4 @@
 from typing import Optional, List
-
 from pydantic import BaseModel
 
 
@@ -7,8 +6,8 @@ class UserInfo(BaseModel):
     telegram_id: str
     fullname: str
     description: str
-    pic: bytes
-    tags: list
+    pic: str
+    tags: list[str] | None = None
 
 
 class UserUpdate(BaseModel):

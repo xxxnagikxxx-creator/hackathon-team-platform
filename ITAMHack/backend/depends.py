@@ -19,4 +19,5 @@ def get_current_telegram_id(
     if telegram_id is None:
         raise HTTPException(status_code=401, detail="Invalid token payload")
 
-    return telegram_id
+    # Конвертируем в str, если пришло как int (для обратной совместимости)
+    return str(telegram_id)

@@ -35,12 +35,13 @@ dp = Dispatcher()
 @dp.message(CommandStart())
 async def command_start_handler(message: Message) -> None:
     async with async_session() as session:
-        user = await get_user_by_telegram_id(session=session, telegram_id=message.from_user.id)
+        telegram_id_str = str(message.from_user.id)
+        user = await get_user_by_telegram_id(session=session, telegram_id=telegram_id_str)
         if user is None:
             await message.answer('Регистрация в системе...')
             await create_user(
                 session=session,
-                telegram_id=message.from_user.id,
+                telegram_id=telegram_id_str,
                 username=message.from_user.username,
                 fullname=message.from_user.full_name
             )
@@ -62,13 +63,14 @@ async def command_start_handler(message: Message) -> None:
 @dp.message(Command("login"))
 async def login(message: types.Message):
     async with async_session() as session:
-        user = await get_user_by_telegram_id(session=session, telegram_id=message.from_user.id)
+        telegram_id_str = str(message.from_user.id)
+        user = await get_user_by_telegram_id(session=session, telegram_id=telegram_id_str)
         if user is None:
             await message.answer('Сначала зарегистрируйтесь! Используйте команду /start')
             return
         
         code = generate_code()
-        await create_login_code(code, message.from_user.id)
+        await create_login_code(code, telegram_id_str)
         expire_minutes = settings.auth_code_expire // 60
         await message.answer(f"Ваш код для входа: {code}\nДействителен {expire_minutes} минут.")
 

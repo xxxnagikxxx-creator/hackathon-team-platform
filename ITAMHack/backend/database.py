@@ -1,5 +1,5 @@
 import logging
-from pathlib import Path
+import os
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -7,26 +7,29 @@ from sqlalchemy.orm import DeclarativeBase
 
 from backend.config import settings
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-SQLITE_PATH = BASE_DIR / "data" / "app.db"
-SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
-
 logger = logging.getLogger(__name__)
 
-env_database_url = (settings.database_url or "").strip()
+# Получаем DATABASE_URL из переменных окружения или из настроек
+env_database_url = os.getenv("DATABASE_URL") or (settings.database_url or "").strip()
 
-if env_database_url.startswith("sqlite"):
-    DATABASE_URL = env_database_url
-elif env_database_url:
-    logger.warning(
-        "DATABASE_URL specified but non-sqlite backend disabled; falling back to sqlite at %s",
-        SQLITE_PATH,
+if not env_database_url:
+    raise ValueError(
+        "DATABASE_URL не указан. Убедитесь, что переменная окружения DATABASE_URL установлена."
     )
-    DATABASE_URL = f"sqlite+aiosqlite:///{SQLITE_PATH.as_posix()}"
-else:
-    DATABASE_URL = f"sqlite+aiosqlite:///{SQLITE_PATH.as_posix()}"
 
-engine = create_async_engine(DATABASE_URL, echo=False)
+# Используем PostgreSQL из DATABASE_URL
+DATABASE_URL = env_database_url
+
+logger.info(f"Подключение к базе данных: {DATABASE_URL.split('@')[-1] if '@' in DATABASE_URL else DATABASE_URL}")
+
+# Создаём engine с настройками для PostgreSQL
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=False,
+    pool_pre_ping=True,  # Проверка соединения перед использованием
+    pool_size=10,  # Размер пула соединений
+    max_overflow=20,  # Максимальное количество дополнительных соединений
+)
 
 async_session = async_sessionmaker(
     bind=engine,

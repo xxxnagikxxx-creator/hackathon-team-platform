@@ -1,21 +1,15 @@
-from sqlalchemy import Column, TEXT, DateTime, INTEGER, JSON
+from sqlalchemy import Column, String, DateTime, Integer, JSON
+from sqlalchemy.sql import func
 from backend.database import Base
-from datetime import datetime
-
 
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column(INTEGER, primary_key=True, autoincrement=True)
-    telegram_id = Column(TEXT, unique=True, nullable=False)
-
-
-    username = Column(TEXT, nullable=True)
-    fullname = Column(TEXT, nullable=True)
-    description = Column(TEXT, nullable=True)
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    telegram_id = Column(String(31), unique=True, nullable=False, index=True)
+    username = Column(String(255), nullable=True)
+    fullname = Column(String(255), nullable=True)
+    description = Column(String(2000), nullable=True)
     tags = Column(JSON, nullable=True)
-
-
-
-    date_registration = Column(DateTime, default=datetime.utcnow)
-
+    date_registration = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

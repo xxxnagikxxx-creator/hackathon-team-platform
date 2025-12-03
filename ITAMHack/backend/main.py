@@ -41,7 +41,7 @@ async def login_by_code(data: CodeInput, response: Response):
         raise HTTPException(status_code=400, detail="Неверный или просроченный код")
 
     await redis_client.delete(key)
-    telegram_id = int(telegram_id_str)
+    telegram_id = telegram_id_str.decode() if isinstance(telegram_id_str, bytes) else telegram_id_str
 
     token = jwt.encode(
         {"telegram_id": telegram_id, "exp": int(time.time()) + settings.access_token_expire_minutes * 60},
