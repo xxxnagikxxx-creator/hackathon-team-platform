@@ -1,0 +1,93 @@
+services:
+  backend:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-freak}:${DB_PASSWORD:-freak}@postgres:5432/${DB_NAME:-freak}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend/api/data:/app/backend/api/data
+    command: uvicorn backend.api.main:app --host 0.0.0.0 --port 8000
+
+  bot:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-freak}:${DB_PASSWORD:-freak}@postgres:5432/${DB_NAME:-freak}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend/api/data:/app/backend/api/data
+    command: python -m backend.api.bot.main
+  postgres:
+    image: postgres:17.0
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DB_USER:-freak}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-freak}
+      POSTGRES_DB: ${DB_NAME:-freak}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-freak} -d ${DB_NAME:-freak}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:7-alpine
+    container_name: itamhack-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Frontend временно отключен (еще не настроен)
+  # frontend:
+  #   restart: always
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile  # Use Dockerfile.dev for development mode
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     - backend
+  #   environment:
+  #     - VITE_API_URL=http://localhost:8000
+  #   # For development mode: change dockerfile to Dockerfile.dev and uncomment volumes below
+  #   # dockerfile: Dockerfile.dev
+  #   # volumes:
+  #   #   - ./frontend:/app
+  #   #   - /app/node_modules
+
+
+volumes:
+  redis_data:
+  postgres_data:
+
+
