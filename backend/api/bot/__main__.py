@@ -1,0 +1,11 @@
+import asyncio
+import logging
+import sys
+
+from backend.api.bot.main import main
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    asyncio.run(main())
+
+
