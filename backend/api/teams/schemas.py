@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from backend.api.models import User
+from backend.api.profile.schemas import UserInfo
 
 class ShortTeamInfo(BaseModel):
     team_id: int
@@ -11,8 +11,8 @@ class TeamInfo(BaseModel):
     team_id: int
     title: str
     description: str
-    captain: User
-    participants: list[User]
+    captain: UserInfo
+    participants: list[UserInfo]
 
 class CreateTeam(BaseModel):
     title: str
@@ -23,6 +23,9 @@ class CreateTeam(BaseModel):
 class EnterTeam(BaseModel):
     password: str
     participant_id: int
+
+class EnterTeamRequest(BaseModel):
+    password: str
 
 class UpdateTeam(BaseModel):
     title: str

@@ -15,9 +15,9 @@ import time
 
 app = FastAPI(title="ITAMHack API", prefix="/api")
 
-app.include_router(admin_router)
-app.include_router(profile_router)
-app.include_router(hackathons_router)
+app.include_router(admin_router, prefix="/api")
+app.include_router(profile_router, prefix="/api")
+app.include_router(hackathons_router, prefix="/api")
 
 
 app.add_middleware(

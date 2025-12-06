@@ -5,10 +5,10 @@ from random import choices
 from backend.api.profile.service import get_user_info_by_telegram_id
 
 from backend.api.depends import get_current_telegram_id
-from backend.api.admin.models import Team
+from backend.api.teams.models import Team
 from backend.api.database import get_db
-from backend.api.teams.schemas import TeamInfo, EnterTeam, CreateTeam, UpdateTeam, ShortTeamInfo
-from backend.api.teams.service import all_teams, get_team_by_id, create_team
+from backend.api.teams.schemas import TeamInfo, EnterTeam, CreateTeam, UpdateTeam, ShortTeamInfo, EnterTeamRequest
+from backend.api.teams.service import all_teams, get_team_by_id, create_team, add_participant
 
 
 router = APIRouter(prefix="/teams", tags=["teams"])
@@ -41,9 +41,9 @@ async def create_team(
 
     team = await create_team(session=session, captain_id=captain_id, password=password)
     captain = await get_user_info_by_telegram_id(session=session, 
-                                                 telegram_id=team.captain_id)
+                                                 telegram_id=str(team.captain_id))
     participants = [await get_user_info_by_telegram_id(session=session, 
-                                                       telegram_id=participant_id) for participant_id in team.participants_id]
+                                                       telegram_id=str(participant_id)) for participant_id in (team.participants_id or [])]
 
     return TeamInfo(
         team_id=team.team_id,
@@ -55,11 +55,43 @@ async def create_team(
 
 @router.post("/{team_id}/enter", response_model=TeamInfo)
 async def enter_team(
-    session: AsyncSession = Depends(get_db),
     team_id: int,
+    request: EnterTeamRequest,
+    session: AsyncSession = Depends(get_db),
+    telegram_id: str = Depends(get_current_telegram_id)
+) -> TeamInfo:
 
-):
+    team = await get_team_by_id(session=session, team_id=team_id)
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    if team.password != request.password:
+        raise HTTPException(status_code=401, detail="Invalid password")
+    
+    participants_list = team.participants_id or []
+    telegram_id_int = int(telegram_id)
+    
+    if telegram_id_int in participants_list:
+        raise HTTPException(status_code=400, detail="User is already a member of this team")
 
+    if team.captain_id == telegram_id_int:
+        raise HTTPException(status_code=400, detail="Captain cannot join as participant")
+    
+    participants_list.append(telegram_id_int)
+    team = await add_participant(session=session, participants_id=participants_list, team=team)
+    
+    captain = await get_user_info_by_telegram_id(session=session, 
+                                                 telegram_id=str(team.captain_id))
+    participants = [await get_user_info_by_telegram_id(session=session, 
+                                                       telegram_id=str(participant_id)) for participant_id in (team.participants_id or [])]
+    
+    return TeamInfo(
+        team_id=team.team_id,
+        title=team.title,
+        description=team.description or "",
+        captain=captain,
+        participants=participants
+    )
 
 
 
@@ -73,8 +105,8 @@ async def hack_info(
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
     
-    captain = await get_user_info_by_telegram_id(team.captain_id)
-    participants = [await get_user_info_by_telegram_id(participant_id) for participant_id in team.participants_id]
+    captain = await get_user_info_by_telegram_id(session=session, telegram_id=str(team.captain_id))
+    participants = [await get_user_info_by_telegram_id(session=session, telegram_id=str(participant_id)) for participant_id in (team.participants_id or [])]
 
     return TeamInfo(
         team_id=team.team_id,
