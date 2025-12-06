@@ -1,8 +1,9 @@
-from fastapi import Cookie, Depends, HTTPException, Response, Path
+from fastapi import Cookie, Depends, HTTPException, Response, Path, Header
 from typing import Annotated
 from backend.api.admin.models import Admin
 from backend.api.config import settings
 from backend.api.database import get_db
+from backend.api.teams.service import get_team_by_id
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
@@ -78,4 +79,28 @@ async def check_user_editable(
         response.headers["X-User-Id"] = current_telegram_id
     
     return is_editable
+
+
+async def verify_captain_access(
+    editable: Annotated[str | None, Header(alias="Editable")] = None,
+    session: AsyncSession = Depends(get_db),
+    team_id: int = Path(...),
+    current_telegram_id: str | None = Depends(get_optional_telegram_id),
+) -> str:
+    if editable != "true":
+        raise HTTPException(status_code=401, detail="Editable header must be 'true'")
+    
+    if current_telegram_id is None:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    telegram_id_str = current_telegram_id
+    
+    team = await get_team_by_id(session=session, team_id=team_id)
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    if team.captain_id != telegram_id_str:
+        raise HTTPException(status_code=403, detail="Only team captain can perform this action")
+    
+    return telegram_id_str
 

@@ -14,13 +14,13 @@ async def all_teams(session: AsyncSession) -> list[Team]:
     result = await session.execute(select(Team))
     return result.scalars().all()
 
-async def create_team(session: AsyncSession, description: str, title: str, captaind_id: int, password: str) -> Team:
+async def create_team(session: AsyncSession, description: str, title: str, captain_id: str, password: str) -> Team:
     
     new_team = Team(
         title=title,
         description=description,
         password=password,
-        captaind_id=captaind_id,
+        captain_id=captain_id,  # Исправлена опечатка и тип
         participants_id=None
     )
 
@@ -30,14 +30,31 @@ async def create_team(session: AsyncSession, description: str, title: str, capta
 
     return new_team
 
-async def add_participant(session: AsyncSession, participants_id: list[int], team: Team):
+async def add_participant(session: AsyncSession, participants_id: list[str], team: Team):
     team.participants_id = participants_id
     await session.commit()
     await session.refresh(team)
 
     return team
 
-async def delete_hack(session: AsyncSession, team: Team) -> None:
+async def remove_participant(session: AsyncSession, participants_id: list[str], team: Team):
+    team.participants_id = participants_id
+    await session.commit()
+    await session.refresh(team)
+
+    return team
+
+async def leave_team(session: AsyncSession, participants_id: list[str], team: Team) -> Team:
+    return await remove_participant(session=session, participants_id=participants_id, team=team)
+
+async def update_team(session: AsyncSession, team: Team, title: str, description: str) -> Team:
+    team.title = title
+    team.description = description
+    await session.commit()
+    await session.refresh(team)
+    return team
+
+async def delete_team(session: AsyncSession, team: Team) -> None:
     await session.delete(team)
     await session.flush()
     await session.commit()

@@ -8,16 +8,24 @@ from backend.api.redis.redis_client import redis_client
 from backend.api.profile.router import router as profile_router
 from backend.api.hackathons.router import router as hackathons_router
 from backend.api.admin.router import router as admin_router
+from backend.api.teams.router import router as teams_router
 
 
 import jwt
 import time
 
-app = FastAPI(title="ITAMHack API", version="1.0.0")
+app = FastAPI(title="ITAMHack API", prefix="/api")
 
-app.include_router(admin_router)
-app.include_router(profile_router)
-app.include_router(hackathons_router)
+
+from backend.api.profile.schemas import UserInfo
+from backend.api.teams.schemas import TeamInfo, ShortTeamInfo
+UserInfo.model_rebuild()
+TeamInfo.model_rebuild()
+
+app.include_router(admin_router, prefix="/api")
+app.include_router(profile_router, prefix="/api")
+app.include_router(hackathons_router, prefix="/api")
+app.include_router(teams_router, prefix="/api")
 
 
 app.add_middleware(

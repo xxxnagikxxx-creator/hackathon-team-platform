@@ -14,8 +14,8 @@ class Team(Base):
     description = Column(TEXT, nullable=True)
 
 
-    captain_id = Column(Integer, nullable=False)
-    participants_id = Column(JSONB, nullable=True)
+    captain_id = Column(TEXT, nullable=False)  # Храним как строку
+    participants_id = Column(JSONB, nullable=True)  # Список строк
 
 
 

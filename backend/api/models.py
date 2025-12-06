@@ -16,4 +16,5 @@ class User(Base):
     tags = Column(JSONB, nullable=True)
     avatar = Column(LargeBinary, nullable=True)
     date_registration = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    in_team = Column(Integer, nullable=True, default=None)
 

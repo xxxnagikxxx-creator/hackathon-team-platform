@@ -28,3 +28,12 @@ async def update_user_info(session: AsyncSession, user: User, data: UserUpdate) 
     await session.refresh(user)
     return user
 
+async def update_user_in_team(session: AsyncSession, telegram_id: str, team_id: int | None) -> User | None:
+    user = await get_user_info_by_telegram_id(session=session, telegram_id=telegram_id)
+    if not user:
+        return None
+    user.in_team = team_id
+    await session.commit()
+    await session.refresh(user)
+    return user
+
