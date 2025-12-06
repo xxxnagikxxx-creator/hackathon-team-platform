@@ -19,7 +19,6 @@ def get_current_telegram_id(
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
-
     telegram_id = payload.get("telegram_id")
     if telegram_id is None:
         raise HTTPException(status_code=401, detail="Invalid token payload")

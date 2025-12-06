@@ -3,13 +3,10 @@ from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
-
 from backend.api.config import settings
 
 env_database_url = os.getenv("DATABASE_URL") or (settings.database_url or "").strip()
 
-if not env_database_url:
-    raise ValueError("DATABASE_URL must be set in environment variables or settings")
 
 DATABASE_URL = env_database_url
 

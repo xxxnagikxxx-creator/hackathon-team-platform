@@ -67,23 +67,22 @@ services:
       timeout: 3s
       retries: 5
 
-  # Frontend временно отключен (еще не настроен)
-  # frontend:
-  #   restart: always
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile  # Use Dockerfile.dev for development mode
-  #   ports:
-  #     - "3000:80"
-  #   depends_on:
-  #     - backend
-  #   environment:
-  #     - VITE_API_URL=http://localhost:8000
-  #   # For development mode: change dockerfile to Dockerfile.dev and uncomment volumes below
-  #   # dockerfile: Dockerfile.dev
-  #   # volumes:
-  #   #   - ./frontend:/app
-  #   #   - /app/node_modules
+  frontend:
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5175:5175"
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      - VITE_API_URL=http://backend:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: /bin/sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5175"
 
 
 volumes:
