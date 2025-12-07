@@ -4,15 +4,17 @@
 
 import axios from 'axios'
 
+// Определяем режим: в продакшене import.meta.env.PROD = true, в разработке import.meta.env.DEV = true
 const isDevelopment = import.meta.env.DEV
+const isProduction = import.meta.env.PROD
 
 // Базовый URL для API запросов
 // В разработке используем относительный путь (проксируется через Vite)
 // В продакшене используем относительный путь /api (проксируется через nginx на backend:8000)
 // Или можно использовать переменную окружения VITE_API_URL для кастомного URL
-export const API_BASE_URL = isDevelopment
-  ? '/api' // Проксируется на http://backend:8000 через Vite
-  : import.meta.env.VITE_API_URL || '/api' // В продакшене nginx проксирует /api на backend:8000
+export const API_BASE_URL = isProduction
+  ? (import.meta.env.VITE_API_URL || '/api') // В продакшене nginx проксирует /api на backend:8000
+  : '/api' // В разработке проксируется на http://backend:8000 через Vite
 
 // Создаем общий экземпляр axios с базовыми настройками
 export const apiClient = axios.create({
