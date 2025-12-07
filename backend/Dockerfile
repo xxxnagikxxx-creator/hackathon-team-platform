@@ -17,6 +17,7 @@ ENV PYTHONPATH=/app
 
 RUN mkdir -p /app/backend/api/data/avatars /app/backend/api/data/hackathons
 
+
 EXPOSE 8000
 
 

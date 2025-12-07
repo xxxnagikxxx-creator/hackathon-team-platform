@@ -7,6 +7,11 @@ export type Participant = {
   role: string
   skills?: string[]
   bio?: string
+  team?: {
+    team_id: number
+    title: string
+    description: string
+  } | null
   createdAt: string
   updatedAt: string
 }

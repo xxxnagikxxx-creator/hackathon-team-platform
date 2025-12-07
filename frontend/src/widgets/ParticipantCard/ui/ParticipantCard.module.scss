@@ -2,7 +2,7 @@
   background-color: #FFF;
   width: 100%;
   max-width: 320px;
-  min-height: 280px;
+  height: 400px; // Фиксированная высота для всех карточек
   border-radius: 20px;
   padding: 20px;
   display: flex;
@@ -56,9 +56,42 @@
     font-size: 16px;
     font-weight: 500;
     color: #0f172a;
-    margin: 0 0 12px 0;
+    margin: 0 0 8px 0;
     text-align: center;
     min-height: 24px;
+  }
+
+  &__telegram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 0 12px 0;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: #0088cc;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: #0077b3;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 136, 204, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &__telegramIcon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
   }
 
   &__stack {
@@ -67,8 +100,9 @@
     gap: 6px;
     margin-bottom: 16px;
     justify-content: center;
-    min-height: 60px;
-    flex: 1;
+    align-content: flex-start;
+    height: 72px; // Фиксированная высота для 2 рядов тегов (примерно 2 * 36px с gap)
+    overflow: hidden;
   }
 
   &__stack_tag {
@@ -88,62 +122,28 @@
     padding: 8px;
   }
 
-  &__actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  &__bio {
     margin-top: auto;
-  }
-
-  &__actionBtn {
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background-color: #fff;
-    color: #0f172a;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Inter', sans-serif;
-
-    &:hover {
-      background-color: #f1f5f9;
-      border-color: #cbd5e1;
-    }
-
-    &_primary {
-      background-color: #C8F133;
-      border-color: #C8F133;
-      color: #0f172a;
-
-      &:hover {
-        background-color: #b3d92e;
-        border-color: #b3d92e;
-      }
-    }
-  }
-
-  &__telegramBtn {
-    width: 100%;
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background-color: #fff;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 1;
+    min-height: 0;
+  }
 
-    img {
-      width: 20px;
-      height: 20px;
-    }
-
-    &:hover {
-      background-color: #f1f5f9;
-      border-color: #cbd5e1;
-    }
+  &__bioText {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #64748b;
+    margin: 0;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

@@ -19,18 +19,32 @@ router = APIRouter(prefix="/hackathons", tags=["hackathons"])
 async def all_hacks_info(
     session: AsyncSession = Depends(get_db),
 ):
-    hacks = await all_hacks(session=session)
+    try:
+        hacks = await all_hacks(session=session)
 
-    return [
-        HackInfo(
-            hack_id=hack.hack_id,
-            title=hack.title or "",
-            description=hack.description or "",
-            pic=get_pic_base64(hack.pic),
-            event_date=hack.event_date
-        )
-        for hack in hacks if hack
-    ]
+        result = []
+        for hack in hacks:
+            if hack:
+                try:
+                    result.append(HackInfo(
+                        hack_id=hack.hack_id,
+                        title=hack.title or "",
+                        description=hack.description or "",
+                        pic=get_pic_base64(hack.pic),
+                        event_date=hack.event_date,
+                        start_date=hack.start_date,
+                        end_date=hack.end_date,
+                        location=hack.location,
+                        participants_count=int(getattr(hack, 'participants_count', 0) or 0),
+                        max_participants=getattr(hack, 'max_participants', None)
+                    ))
+                except Exception as e:
+                    # Если не удалось обработать один хакатон, пропускаем его
+                    continue
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching hackathons: {str(e)}")
 
 @router.get("/{hack_id}", response_model=HackInfo)
 async def hack_info(
@@ -47,7 +61,12 @@ async def hack_info(
         title=hack.title or "",
         description=hack.description or "",
         pic=get_pic_base64(hack.pic),
-        event_date=hack.event_date
+        event_date=hack.event_date,
+        start_date=hack.start_date,
+        end_date=hack.end_date,
+        location=hack.location,
+        participants_count=hack.participants_count or 0,
+        max_participants=getattr(hack, 'max_participants', None)
     )
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -71,6 +90,10 @@ async def update_hack_info(
         description=data.description,
         pic=data.pic,
         event_date=data.event_date,
+        start_date=data.start_date,
+        end_date=data.end_date,
+        location=data.location,
+        max_participants=data.max_participants,
     )
 
     return HackInfo(
@@ -78,7 +101,12 @@ async def update_hack_info(
         title=hack.title or "",
         description=hack.description or "",
         pic=get_pic_base64(hack.pic),
-        event_date=hack.event_date
+        event_date=hack.event_date,
+        start_date=hack.start_date,
+        end_date=hack.end_date,
+        location=hack.location,
+        participants_count=hack.participants_count or 0,
+        max_participants=getattr(hack, 'max_participants', None)
     )
 
 
@@ -106,11 +134,17 @@ async def create_hack_endpoint(
         admin: Admin = Depends(get_current_admin)
 ) -> HackInfo:
     try:
-        hack = await create_hack(session=session,
-                                 title=data.title,
-                                 description=data.description,
-                                 pic=data.pic,
-                                 event_date=data.event_date)
+        hack = await create_hack(
+            session=session,
+            title=data.title,
+            description=data.description,
+            pic=data.pic,
+            event_date=data.event_date,
+            start_date=data.start_date,
+            end_date=data.end_date,
+            location=data.location,
+            max_participants=data.max_participants
+        )
         pic_base64 = ""
         try:
             pic_base64 = get_pic_base64(hack.pic)
@@ -124,16 +158,28 @@ async def create_hack_endpoint(
         title = getattr(hack, 'title', None) or ""
         description = getattr(hack, 'description', None) or ""
         event_date = getattr(hack, 'event_date', None)
+        start_date = getattr(hack, 'start_date', None)
+        end_date = getattr(hack, 'end_date', None)
+        location = getattr(hack, 'location', None)
         
         if event_date is None:
             raise HTTPException(status_code=500, detail="Failed to create hack: event_date is None")
+        if start_date is None:
+            raise HTTPException(status_code=500, detail="Failed to create hack: start_date is None")
+        if end_date is None:
+            raise HTTPException(status_code=500, detail="Failed to create hack: end_date is None")
 
         return HackInfo(
             hack_id=hack_id,
             title=title,
             description=description,
             pic=pic_base64,
-            event_date=event_date
+            event_date=event_date,
+            start_date=start_date,
+            end_date=end_date,
+            location=location,
+            participants_count=getattr(hack, 'participants_count', 0) or 0,
+            max_participants=getattr(hack, 'max_participants', None)
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating hack: {str(e)}")

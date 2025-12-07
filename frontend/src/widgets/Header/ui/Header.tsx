@@ -7,10 +7,12 @@ import logo from '../../../shared/assets/logo.svg'
 import { AuthBlock } from '../../AuthBlock'
 import { useState } from 'react'
 import { useUser } from '../../../app/providers/UserProvider'
+import { useAdmin } from '../../../app/providers/AdminProvider'
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const { isAuthenticated, user } = useUser()
+  const { isAuthenticated, user, telegramId, logout } = useUser()
+  const { isAuthenticated: isAdminAuthenticated } = useAdmin()
 
   function openAuth() {
     setIsOpen(true)
@@ -18,6 +20,15 @@ export const Header = () => {
 
   function closeAuth() {
     setIsOpen(false)
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Ошибка при выходе:', error)
+    }
   }
 
   return (
@@ -34,20 +45,38 @@ export const Header = () => {
                 <img src={bellIcon} alt="Уведомления" className={styles.header__notifications} />
               </NavLink>
 
-              <NavLink to="/profile" className={styles.header__iconLink}>
+              <NavLink 
+                to={telegramId ? `/participants/${telegramId}` : "/profile"} 
+                className={styles.header__iconLink}
+              >
                 <img
                   src={user?.avatarUrl || user?.avatarSrc || personIcon}
                   alt="Профиль"
                   className={styles.header__profile}
                 />
               </NavLink>
+
+              <button 
+                onClick={handleLogout}
+                className={styles.header__logoutButton}
+                title="Выйти"
+              >
+                Выйти
+              </button>
             </>
           )}
 
           {!isAuthenticated && (
+            <>
             <MainButton onClick={openAuth} className={styles.header__loginButton}>
               Войти
             </MainButton>
+              <NavLink to="/hackatons/admin">
+                <button className={styles.header__adminButton} title="Вход для администратора">
+                  Админ
+                </button>
+              </NavLink>
+            </>
           )}
         </div>
       </header>

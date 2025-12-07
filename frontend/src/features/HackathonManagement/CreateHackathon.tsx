@@ -73,16 +73,37 @@ export const CreateHackathon = ({ onSuccess, onCancel }: CreateHackathonProps) =
 
         <div className={styles.createHackathon__field}>
           <label className={styles.createHackathon__label}>
-            URL изображения <span className={styles.createHackathon__required}>*</span>
+            Изображение <span className={styles.createHackathon__required}>*</span>
           </label>
           <input
-            type="url"
-            value={formData.imageUrl}
-            onChange={(e) => handleChange('imageUrl', e.target.value)}
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) {
+                const reader = new FileReader()
+                reader.onload = (event) => {
+                  const base64String = event.target?.result as string
+                  handleChange('imageUrl', base64String)
+                }
+                reader.readAsDataURL(file)
+              }
+            }}
             className={styles.createHackathon__input}
-            placeholder="https://example.com/image.jpg"
             required
           />
+          {formData.imageUrl && (
+            <img 
+              src={formData.imageUrl} 
+              alt="Preview" 
+              style={{ 
+                maxWidth: '200px', 
+                maxHeight: '200px', 
+                marginTop: '10px',
+                borderRadius: '8px'
+              }} 
+            />
+          )}
         </div>
 
         <div className={styles.createHackathon__row}>
@@ -91,7 +112,7 @@ export const CreateHackathon = ({ onSuccess, onCancel }: CreateHackathonProps) =
               Дата начала <span className={styles.createHackathon__required}>*</span>
             </label>
             <input
-              type="datetime-local"
+              type="date"
               value={formData.startDate}
               onChange={(e) => handleChange('startDate', e.target.value)}
               className={styles.createHackathon__input}
@@ -104,7 +125,7 @@ export const CreateHackathon = ({ onSuccess, onCancel }: CreateHackathonProps) =
               Дата окончания <span className={styles.createHackathon__required}>*</span>
             </label>
             <input
-              type="datetime-local"
+              type="date"
               value={formData.endDate}
               onChange={(e) => handleChange('endDate', e.target.value)}
               className={styles.createHackathon__input}

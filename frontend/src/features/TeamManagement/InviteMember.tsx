@@ -1,23 +1,27 @@
+// Примечание: Endpoint для приглашения участников не существует на бэке
+// Вместо этого используется POST /teams/{team_id}/enter с паролем
+// Этот компонент можно использовать для входа в команду по паролю
+
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { teamService } from '../../entities/Team'
-import type { InviteMemberDto } from '../../entities/Team'
+import type { EnterTeamDto } from '../../entities/Team'
 import styles from './InviteMember.module.scss'
 
 type InviteMemberProps = {
   teamId: number
-  participantId: number
+  password: string
   onSuccess?: () => void
   onError?: (error: Error) => void
 }
 
-export const InviteMember = ({ teamId, participantId, onSuccess, onError }: InviteMemberProps) => {
+export const InviteMember = ({ teamId, password, onSuccess, onError }: InviteMemberProps) => {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: (data: InviteMemberDto) => teamService.inviteMember(data),
+    mutationFn: (data: EnterTeamDto) => teamService.enterTeam(teamId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] })
       queryClient.invalidateQueries({ queryKey: ['teams'] })
+      queryClient.invalidateQueries({ queryKey: ['team', teamId] })
       onSuccess?.()
     },
     onError: (error) => {
@@ -26,7 +30,7 @@ export const InviteMember = ({ teamId, participantId, onSuccess, onError }: Invi
   })
 
   const handleInvite = () => {
-    mutation.mutate({ teamId, participantId })
+    mutation.mutate({ password })
   }
 
   return (
@@ -38,10 +42,10 @@ export const InviteMember = ({ teamId, participantId, onSuccess, onError }: Invi
       {mutation.isPending ? (
         <>
           <span className={styles.inviteMember__spinner}></span>
-          Отправка...
+          Вход в команду...
         </>
       ) : (
-        'Пригласить в команду'
+        'Войти в команду'
       )}
     </button>
   )

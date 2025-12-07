@@ -2,11 +2,15 @@ from backend.api.models import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-async def create_user(session: AsyncSession, telegram_id: str, username: str, fullname: str) -> User:
+async def create_user(session: AsyncSession, telegram_id: str, username: str | None, fullname: str | None) -> User:
+    telegram_id_clean = str(telegram_id).strip()
+    username_value = username or fullname or f"User {telegram_id_clean}"
+    fullname_value = fullname or username or f"User {telegram_id_clean}"
+    
     new_user = User(
         username=username,
-        telegram_id=str(telegram_id),
-        fullname=fullname,
+        telegram_id=telegram_id_clean,
+        fullname=fullname_value,
     )
     session.add(new_user)
     await session.commit()

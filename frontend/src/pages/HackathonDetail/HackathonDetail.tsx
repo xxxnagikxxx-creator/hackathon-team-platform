@@ -1,8 +1,8 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useParams, useNavigate } from 'react-router-dom'
 import { hackathonService } from '../../entities/Hackathon'
 import { useUser } from '../../app/providers/UserProvider'
-// import { EditHackaton } from '../../features/HackathonManagement/EditHackaton'
+import { HackathonTeamModal } from '../../features/TeamJoin'
 import { useState } from 'react'
 import styles from './HackathonDetail.module.scss'
 import arrowIcon from '../../shared/assets/icons/arrow.svg'
@@ -12,22 +12,13 @@ export const HackathonDetail = () => {
   const navigate = useNavigate()
   const { user } = useUser()
   const [isEditing, setIsEditing] = useState(false)
+  const [showTeamModal, setShowTeamModal] = useState(false)
   const isOrganizer = user?.role === 'organizer'
 
   const { data: hackathon, isLoading } = useQuery({
     queryKey: ['hackathon', id],
     queryFn: () => hackathonService.getById(Number(id)),
     enabled: !!id,
-  })
-
-  const participateMutation = useMutation({
-    mutationFn: () => hackathonService.participate(Number(id)),
-    onSuccess: () => {
-      alert('Вы успешно присоединились к хакатону!')
-    },
-    onError: (error: any) => {
-      alert(error?.message || 'Ошибка при присоединении к хакатону')
-    },
   })
 
   if (isLoading) {
@@ -56,8 +47,6 @@ export const HackathonDetail = () => {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     })
   }
 
@@ -110,12 +99,10 @@ export const HackathonDetail = () => {
               <span className={styles.hackathonDetail__metaLabel}>Окончание:</span>
               <span className={styles.hackathonDetail__metaValue}>{formatDate(hackathon.endDate)}</span>
             </div>
-            {hackathon.maxParticipants && (
               <div className={styles.hackathonDetail__metaItem}>
                 <span className={styles.hackathonDetail__metaLabel}>Максимум участников:</span>
-                <span className={styles.hackathonDetail__metaValue}>{hackathon.maxParticipants}</span>
+              <span className={styles.hackathonDetail__metaValue}>{hackathon.maxParticipants || 'Не ограничено'}</span>
               </div>
-            )}
           </div>
 
               <div className={styles.hackathonDetail__description}>
@@ -126,15 +113,21 @@ export const HackathonDetail = () => {
               {user && !isOrganizer && (
                 <div className={styles.hackathonDetail__actions}>
                   <button
-                    onClick={() => participateMutation.mutate()}
-                    disabled={participateMutation.isPending}
+                    onClick={() => setShowTeamModal(true)}
                     className={styles.hackathonDetail__participateButton}
                   >
-                    {participateMutation.isPending ? 'Присоединение...' : 'Присоединиться'}
+                    Присоединиться
                   </button>
                 </div>
               )}
             </>
+          )}
+
+          {showTeamModal && hackathon && (
+            <HackathonTeamModal
+              hackathonId={hackathon.id}
+              onClose={() => setShowTeamModal(false)}
+            />
           )}
 
           {isEditing && isOrganizer && (

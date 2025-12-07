@@ -1,4 +1,4 @@
-import type { Hackathon, CreateHackathonDto, UpdateHackathonDto } from '../model/hackathon'
+import type { Hackathon, CreateHackathonDto, UpdateHackathonDto, BackendHackInfo } from '../model/hackathon'
 import { apiClient } from '../../../shared/config/api'
 
 // МОК-ДАННЫЕ для тестирования (используются если API недоступен)
@@ -12,6 +12,7 @@ const MOCK_HACKATHONS: Hackathon[] = [
     endDate: '2024-12-03T18:00:00Z',
     location: 'Москва',
     maxParticipants: 100,
+    participantsCount: 45,
     createdAt: '2024-11-01T00:00:00Z',
     updatedAt: '2024-11-01T00:00:00Z',
   },
@@ -24,6 +25,7 @@ const MOCK_HACKATHONS: Hackathon[] = [
     endDate: '2024-12-12T20:00:00Z',
     location: 'Онлайн',
     maxParticipants: 200,
+    participantsCount: 127,
     createdAt: '2024-11-05T00:00:00Z',
     updatedAt: '2024-11-05T00:00:00Z',
   },
@@ -36,13 +38,82 @@ const MOCK_HACKATHONS: Hackathon[] = [
     endDate: '2024-12-22T18:00:00Z',
     location: 'Санкт-Петербург',
     maxParticipants: 50,
+    participantsCount: 32,
     createdAt: '2024-11-10T00:00:00Z',
     updatedAt: '2024-11-10T00:00:00Z',
   },
 ]
 
 // Флаг для использования мок-данных (установите в true для тестирования без API)
-const USE_MOCK_DATA = true
+const USE_MOCK_DATA = false
+
+// Маппер для преобразования Backend HackInfo в Frontend Hackathon
+function mapBackendHackToHackathon(backendHack: BackendHackInfo): Hackathon {
+  // Преобразуем base64 в data URL для отображения
+  const imageUrl = backendHack.pic 
+    ? (backendHack.pic.startsWith('data:') ? backendHack.pic : `data:image/jpeg;base64,${backendHack.pic}`)
+    : ''
+
+  // Преобразуем date формат (YYYY-MM-DD) - оставляем только дату без времени
+  // Если есть время, убираем его, оставляем только дату
+  const startDate = backendHack.start_date.includes('T') 
+    ? backendHack.start_date.split('T')[0]
+    : backendHack.start_date
+  const endDate = backendHack.end_date.includes('T')
+    ? backendHack.end_date.split('T')[0]
+    : backendHack.end_date
+
+  return {
+    id: backendHack.hack_id,
+    title: backendHack.title,
+    description: backendHack.description,
+    imageUrl,
+    startDate,
+    endDate,
+    location: backendHack.location || undefined,
+    maxParticipants: backendHack.max_participants || undefined,
+    participantsCount: backendHack.participants_count || 0,
+    createdAt: new Date().toISOString(), // Нет на бэке
+    updatedAt: new Date().toISOString(), // Нет на бэке
+  }
+}
+
+// Маппер для преобразования Frontend CreateHackathonDto в Backend CreateHack
+function mapCreateHackathonToBackend(data: CreateHackathonDto): {
+  title: string
+  description: string
+  pic: string
+  event_date: string
+  start_date: string
+  end_date: string
+  location?: string | null
+  max_participants?: number | null
+} {
+  // Извлекаем base64 из data URL если нужно
+  let pic = data.imageUrl
+  if (pic.startsWith('data:')) {
+    // Убираем префикс data:image/...;base64,
+    const base64Index = pic.indexOf('base64,')
+    if (base64Index !== -1) {
+      pic = pic.substring(base64Index + 7)
+    }
+  }
+
+  // Преобразуем date формат (YYYY-MM-DD) - убираем время если есть
+  const startDate = data.startDate.includes('T') ? data.startDate.split('T')[0] : data.startDate
+  const endDate = data.endDate.includes('T') ? data.endDate.split('T')[0] : data.endDate
+
+  return {
+    title: data.title,
+    description: data.description,
+    pic: pic,
+    event_date: startDate, 
+    start_date: startDate,
+    end_date: endDate,
+    location: data.location || null,
+    max_participants: data.maxParticipants || null,
+  }
+}
 
 export const hackathonService = {
   // Получить все хакатоны
@@ -52,12 +123,14 @@ export const hackathonService = {
     }
     
     try {
-      const response = await apiClient.get<Hackathon[]>('/hackathons')
-      return response.data
+      const response = await apiClient.get<BackendHackInfo[]>('/hackathons')
+      return response.data.map(mapBackendHackToHackathon)
     } catch (error) {
       console.error('Ошибка загрузки хакатонов:', error)
-      // Возвращаем мок-данные при ошибке
-      return MOCK_HACKATHONS
+      if (USE_MOCK_DATA) {
+        return MOCK_HACKATHONS
+      }
+      throw error
     }
   },
 
@@ -72,13 +145,15 @@ export const hackathonService = {
     }
     
     try {
-      const response = await apiClient.get<Hackathon>(`/hackathons/${id}`)
-      return response.data
+      const response = await apiClient.get<BackendHackInfo>(`/hackathons/${id}`)
+      return mapBackendHackToHackathon(response.data)
     } catch (error) {
       console.error('Ошибка загрузки хакатона:', error)
-      const hackathon = MOCK_HACKATHONS.find(h => h.id === id)
-      if (hackathon) {
-        return hackathon
+      if (USE_MOCK_DATA) {
+        const hackathon = MOCK_HACKATHONS.find(h => h.id === id)
+        if (hackathon) {
+          return hackathon
+        }
       }
       throw error
     }
@@ -97,8 +172,14 @@ export const hackathonService = {
       return Promise.resolve(newHackathon)
     }
     
-    const response = await apiClient.post<Hackathon>('/hackathons', data)
-    return response.data
+    try {
+      const backendData = mapCreateHackathonToBackend(data)
+      const response = await apiClient.post<BackendHackInfo>('/hackathons/create_hack', backendData)
+      return mapBackendHackToHackathon(response.data)
+    } catch (error) {
+      console.error('Ошибка создания хакатона:', error)
+      throw error
+    }
   },
 
   // Обновить хакатон
@@ -116,11 +197,49 @@ export const hackathonService = {
       return Promise.resolve(MOCK_HACKATHONS[index])
     }
     
-    const response = await apiClient.patch<Hackathon>(`/hackathons/${id}`, data)
-    return response.data
+    try {
+      // Преобразуем UpdateHackathonDto в формат для бэка
+      const updateData: any = {}
+      
+      if (data.title !== undefined) updateData.title = data.title
+      if (data.description !== undefined) updateData.description = data.description
+      if (data.imageUrl !== undefined) {
+        // Извлекаем base64 из data URL если нужно
+        let pic = data.imageUrl
+        if (pic.startsWith('data:')) {
+          const base64Index = pic.indexOf('base64,')
+          if (base64Index !== -1) {
+            pic = pic.substring(base64Index + 7)
+          }
+        }
+        updateData.pic = pic
+      }
+      
+      // Преобразуем date формат - убираем время если есть
+      if (data.startDate !== undefined) {
+        const startDate = data.startDate.includes('T') ? data.startDate.split('T')[0] : data.startDate
+        updateData.start_date = startDate
+        updateData.event_date = startDate // Для обратной совместимости
+      }
+      if (data.endDate !== undefined) {
+        const endDate = data.endDate.includes('T') ? data.endDate.split('T')[0] : data.endDate
+        updateData.end_date = endDate
+      }
+      if (data.location !== undefined) {
+        updateData.location = data.location || null
+      }
+      if (data.maxParticipants !== undefined) {
+        updateData.max_participants = data.maxParticipants || null
+      }
+
+      const response = await apiClient.post<BackendHackInfo>(`/hackathons/${id}/update_hack`, updateData)
+      return mapBackendHackToHackathon(response.data)
+    } catch (error) {
+      console.error('Ошибка обновления хакатона:', error)
+      throw error
+    }
   },
 
-  // Удалить хакатон
   async delete(id: number): Promise<void> {
     if (USE_MOCK_DATA) {
       const index = MOCK_HACKATHONS.findIndex(h => h.id === id)
@@ -130,10 +249,14 @@ export const hackathonService = {
       return Promise.resolve()
     }
     
-    await apiClient.delete(`/hackathons/${id}`)
+    try {
+      await apiClient.post(`/hackathons/${id}/delete_hack`)
+    } catch (error) {
+      console.error('Ошибка удаления хакатона:', error)
+      throw error
+    }
   },
 
-  // Присоединиться к хакатону
   async participate(id: number): Promise<void> {
     if (USE_MOCK_DATA) {
       console.log(`Участник присоединился к хакатону ${id}`)
