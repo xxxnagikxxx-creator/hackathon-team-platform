@@ -1,0 +1,70 @@
+$main-button-color: #C8F133;
+$main-button-color-hover: #B3B3B3;
+$main-button-color-active: #999898;
+
+:root {
+  font-family: 'Inter', sans-serif;
+
+  .container {
+    width: 1200px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    font-size: 64px;
+  }
+
+  h3 {
+    font-size: 36px;
+  }
+
+  h5 {
+    font-size: 24px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+}
+
+.app {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+
+  &__layout {
+    display: flex;
+    width: 100%;
+    position: relative;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+    padding-top: calc(66px + 20px);
+    padding-right: 24px;
+    padding-left: calc(247px + 24px);
+    padding-bottom: 40px;
+    overflow-x: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+    width: calc(100% - 247px);
+  }
+}
+
+.main-button {
+  padding: 12px 43px;
+  background-color: transparent;
+  background-color: $main-button-color;
+  border-radius: 38px;
+  transition: 0.3s ease;
+
+  &:hover {
+    background-color: $main-button-color-hover;
+  }
+
+  &:active {
+    background-color: $main-button-color-active;
+  }
+}
+

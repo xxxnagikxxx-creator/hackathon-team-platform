@@ -1,0 +1,99 @@
+.teamCard {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 200px;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+    flex: 1;
+  }
+
+  &__info {
+    font-size: 14px;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  &__members {
+    flex: 1;
+  }
+
+  &__membersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  &__member {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background-color: #F5F5F5;
+    border-radius: 20px;
+  }
+
+  &__memberAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__memberName {
+    font-size: 14px;
+    color: #0f172a;
+    font-weight: 500;
+  }
+
+  &__moreMembers {
+    padding: 6px 12px;
+    background-color: #C8F133;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  &__viewDetails {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  &:hover &__viewDetails {
+    color: #C8F133;
+  }
+}
+
