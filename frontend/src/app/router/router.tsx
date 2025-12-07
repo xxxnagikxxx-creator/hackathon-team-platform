@@ -11,10 +11,48 @@ import { Participants } from '../../pages/Participants/Participants'
 import { ParticipantDetail } from '../../pages/ParticipantDetail'
 import { Sidebar } from '../../widgets/Sidebar'
 import { NotFoundPage } from '../../pages/NotFoundPage/NotFoundPage'
+import { AdminPanel } from '../../pages/AdminPanel'
 import { useUser } from '../providers/UserProvider'
 
 function AppRouter() {
-  const { isAuthenticated } = useUser()
+  const { isAuthenticated, isLoading } = useUser()
+
+  // Показываем загрузку пока проверяется аутентификация
+  if (isLoading) {
+    return (
+      <BrowserRouter>
+        <div className="app">
+          <Header />
+          <main className="app__content">
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              height: '100vh',
+              flexDirection: 'column',
+              gap: '16px'
+            }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                border: '4px solid #f3f3f3',
+                borderTop: '4px solid #C8F133',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <p>Загрузка...</p>
+            </div>
+          </main>
+        </div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </BrowserRouter>
+    )
+  }
 
   return (
     <BrowserRouter>
@@ -27,6 +65,7 @@ function AppRouter() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/hackatons" element={<Hackatons />} />
+                <Route path="/hackatons/admin" element={<AdminPanel />} />
                 <Route path="/hackatons/:id" element={<HackathonDetail />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/participants" element={<Participants />} />
@@ -43,6 +82,7 @@ function AppRouter() {
           <main className="app__content">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/hackatons/admin" element={<AdminPanel />} />
               <Route path="/*" element={<Home />} />
             </Routes>
           </main>

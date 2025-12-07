@@ -1,0 +1,212 @@
+.adminPanel {
+  min-height: calc(100vh - 66px);
+  padding: 40px;
+  background-color: #f8fafc;
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    font-size: 18px;
+    color: #64748b;
+  }
+
+  &__login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 66px);
+  }
+
+  &__content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+
+  &__title {
+    font-size: 36px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  &__logoutButton {
+    padding: 10px 20px;
+    background-color: transparent;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+
+    &:hover {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  &__section {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 32px;
+  }
+
+  &__sectionTitle {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 24px;
+  }
+
+  &__actions {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__createButton {
+    padding: 12px 24px;
+    background-color: #C8F133;
+    border: none;
+    border-radius: 12px;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+
+    &:hover {
+      background-color: #B3B3B3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(200, 241, 51, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &__hackathonsList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__hackathonItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+    gap: 20px;
+
+    &:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  &__hackathonImage {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  &__hackathonInfo {
+    flex: 1;
+  }
+
+  &__hackathonTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+  }
+
+  &__hackathonDescription {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+  }
+
+  &__hackathonMeta {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+
+  &__hackathonActions {
+    display: flex;
+    gap: 12px;
+    margin-left: 24px;
+    flex-shrink: 0;
+  }
+
+  &__editButton,
+  &__deleteButton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__editButton {
+    background-color: #C8F133;
+    color: #0f172a;
+
+    &:hover:not(:disabled) {
+      background-color: #B3B3B3;
+    }
+  }
+
+  &__deleteButton {
+    background-color: #fee2e2;
+    color: #dc2626;
+
+    &:hover:not(:disabled) {
+      background-color: #fecaca;
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+    font-size: 16px;
+  }
+}

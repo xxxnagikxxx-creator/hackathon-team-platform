@@ -19,16 +19,38 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Важно для работы с cookies (access_token, captain-access-token)
   // Добавьте здесь общие interceptors, если нужно
   // Например, для добавления токена авторизации
 })
 
 // Interceptor для обработки ошибок (опционально)
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('API Response:', response.config.method?.toUpperCase(), response.config.url, response.status)
+    return response
+  },
   (error) => {
     // Здесь можно добавить общую обработку ошибок
-    console.error('API Error:', error)
+    console.error('API Error:', {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      url: error.config?.url,
+      baseURL: error.config?.baseURL,
+    })
+    return Promise.reject(error)
+  }
+)
+
+// Interceptor для логирования запросов
+apiClient.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', config.method?.toUpperCase(), config.baseURL + config.url, config.data)
+    return config
+  },
+  (error) => {
+    console.error('API Request Error:', error)
     return Promise.reject(error)
   }
 )

@@ -82,25 +82,38 @@ async def check_user_editable(
 
 
 async def verify_captain_access(
-    editable: Annotated[str | None, Header(alias="Editable")] = None,
+    team_id: Annotated[int, Path()],
+    captain_access_token: str | None = Cookie(default=None, alias="captain-access-token"),
     session: AsyncSession = Depends(get_db),
-    team_id: int = Path(...),
     current_telegram_id: str | None = Depends(get_optional_telegram_id),
 ) -> str:
-    if editable != "true":
-        raise HTTPException(status_code=401, detail="Editable header must be 'true'")
-    
     if current_telegram_id is None:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    telegram_id_str = current_telegram_id
     
     team = await get_team_by_id(session=session, team_id=team_id)
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
     
-    if team.captain_id != telegram_id_str:
+    # Проверяем, что пользователь является капитаном команды
+    if team.captain_id != current_telegram_id:
         raise HTTPException(status_code=403, detail="Only team captain can perform this action")
     
-    return telegram_id_str
+    # Если есть токен, проверяем его валидность (опционально)
+    if captain_access_token:
+        try:
+            payload = jwt.decode(captain_access_token, settings.secret_key, algorithms=[settings.algorithm])
+            token_telegram_id = payload.get("telegram_id")
+            token_team_id = payload.get("team_id")
+            
+            if token_telegram_id != current_telegram_id:
+                raise HTTPException(status_code=401, detail="Token telegram_id mismatch")
+            
+            if token_team_id != team_id:
+                raise HTTPException(status_code=403, detail="Token team_id mismatch")
+        except jwt.ExpiredSignatureError:
+            pass
+        except jwt.InvalidTokenError:
+            pass
+    
+    return current_telegram_id
 

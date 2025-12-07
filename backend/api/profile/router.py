@@ -1,13 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+import logging
 
 from backend.api.database import get_db
+
+logger = logging.getLogger(__name__)
 from backend.api.profile.schemas import UserInfo, UserUpdate
 from backend.api.profile.service import get_user_info_by_telegram_id, all_users_info, update_user_info
 from backend.api.depends import get_current_telegram_id, check_user_editable
 from backend.api.profile.utils import get_avatar_base64, parse_tags
 from backend.api.teams.service import get_team_by_id
 from backend.api.teams.schemas import ShortTeamInfo
+
 
 
 router = APIRouter(prefix="/participants", tags=["participants"])
@@ -23,8 +27,6 @@ async def all_user_profile(
     for user in users:
         if not user:
             continue
-        
-        # Получаем информацию о команде, если пользователь в команде
         team_info = None
         if user.in_team is not None:
             team = await get_team_by_id(session=session, team_id=user.in_team)
@@ -58,6 +60,7 @@ async def user_profile(
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
 
     team_info = None
     if user.in_team is not None:

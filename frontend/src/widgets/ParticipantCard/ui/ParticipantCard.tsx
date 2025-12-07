@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import styles from "./ParticipantCard.module.scss"
-import telegramIcon from '../../../shared/assets/icons/telegram.svg'
 
 export type ParticipantProps = {
   id?: number,
@@ -8,10 +7,8 @@ export type ParticipantProps = {
   src: string,
   role: string,
   skills?: string[],
+  bio?: string,
   tgTag?: string,
-  onInvite?: () => void,
-  onRespond?: () => void,
-  showActions?: boolean
 }
 
 export const ParticipantCard = ({
@@ -19,11 +16,9 @@ export const ParticipantCard = ({
   src, 
   name, 
   role, 
-  skills, 
+  skills,
+  bio,
   tgTag,
-  onInvite,
-  onRespond,
-  showActions = false
 }: ParticipantProps) => {
   const navigate = useNavigate()
 
@@ -31,23 +26,6 @@ export const ParticipantCard = ({
     if (id) {
       navigate(`/participants/${id}`)
     }
-  }
-
-  const handleTelegram = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (tgTag) {
-      window.open(`https://t.me/${tgTag.replace('@', '')}`, '_blank')
-    }
-  }
-
-  const handleInvite = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onInvite?.()
-  }
-
-  const handleRespond = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onRespond?.()
   }
 
   return (
@@ -66,11 +44,26 @@ export const ParticipantCard = ({
       
       <div className={styles.participant__content}>
         <h5 className={styles.participant__name}>{name}</h5>
-        <p className={styles.participant__role}>{role}</p>        
+        <p className={styles.participant__role}>{role}</p>
+        
+        {tgTag && (
+          <a
+            href={`https://t.me/${tgTag}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.participant__telegram}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className={styles.participant__telegramIcon}>
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+            </svg>
+            @{tgTag}
+          </a>
+        )}
         
         <div className={styles.participant__stack}>
           {skills && skills.length > 0 ? (
-            skills.slice(0, 4).map((skill, index) => (
+            skills.slice(0, 8).map((skill, index) => (
               <span
                 key={index}
                 className={styles.participant__stack_tag}
@@ -83,33 +76,9 @@ export const ParticipantCard = ({
           )}
         </div>
 
-        {showActions && (
-          <div className={styles.participant__actions}>
-            {onRespond && (
-              <button
-                className={styles.participant__actionBtn}
-                onClick={handleRespond}
-              >
-                Откликнуться
-              </button>
-            )}
-            {onInvite && (
-              <button
-                className={`${styles.participant__actionBtn} ${styles.participant__actionBtn_primary}`}
-                onClick={handleInvite}
-              >
-                Пригласить в команду
-              </button>
-            )}
-            {tgTag && (
-              <button
-                className={styles.participant__telegramBtn}
-                onClick={handleTelegram}
-                title="Написать в Telegram"
-              >
-                <img src={telegramIcon} alt="Telegram" />
-              </button>
-            )}
+        {bio && bio.trim() !== '' && (
+          <div className={styles.participant__bio}>
+            <p className={styles.participant__bioText}>{bio}</p>
           </div>
         )}
       </div>

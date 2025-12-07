@@ -1,0 +1,133 @@
+.joinRequests {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: #212529;
+  }
+
+  &__loading,
+  &__empty {
+    padding: 2rem;
+    text-align: center;
+    color: #6c757d;
+  }
+
+  &__empty {
+    font-style: italic;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.joinRequestItem {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &__loading {
+    padding: 1rem;
+    text-align: center;
+    color: #6c757d;
+  }
+
+  &__participant {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  &__date {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  &__approveButton,
+  &__declineButton {
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__approveButton {
+    background: #28a745;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      background: #218838;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  &__declineButton {
+    background: #dc3545;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      background: #c82333;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .joinRequestItem {
+    flex-direction: column;
+    align-items: stretch;
+
+    &__actions {
+      justify-content: stretch;
+    }
+
+    &__approveButton,
+    &__declineButton {
+      flex: 1;
+    }
+  }
+}

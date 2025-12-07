@@ -16,7 +16,6 @@ def get_avatar_base64(avatar_data) -> str:
             return base64.b64encode(avatar_data).decode()
         except Exception:
             return ""
-    # Для других типов пытаемся преобразовать в байты
     try:
         if hasattr(avatar_data, 'tobytes'):
             return base64.b64encode(avatar_data.tobytes()).decode()

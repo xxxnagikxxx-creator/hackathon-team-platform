@@ -1,11 +1,44 @@
 .profile {
   animation: fadeIn 0.4s ease;
 
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
   &__title {
     font-size: 48px;
     font-weight: 600;
-    margin: 0 0 32px 0;
+    margin: 0;
     color: #0f172a;
+  }
+
+  &__logoutButton {
+    padding: 12px 24px;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    color: #dc2626;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+
+    &:hover {
+      background-color: #fecaca;
+      border-color: #f87171;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
   }
 }
 

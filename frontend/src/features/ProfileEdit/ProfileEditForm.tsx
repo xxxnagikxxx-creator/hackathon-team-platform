@@ -2,28 +2,64 @@ import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { participantService } from '../../entities/Participant'
 import type { UpdateParticipantDto } from '../../entities/Participant'
+import { useUser } from '../../app/providers/UserProvider'
 import styles from './ProfileEditForm.module.scss'
 
 const POPULAR_SKILLS = [
-  'React',
-  'GO',
-  'TypeScript',
-  'JavaScript',
-  'Node.js',
   'Python',
-  'Java',
+  'JavaScript',
+  'TypeScript',
+  'React',
   'Vue',
   'Angular',
-  'Next.js',
+  'Node.js',
+  'FastAPI',
+  'Django',
+  'Flask',
   'Express',
+  'Next.js',
+  'Git',
+  'Docker',
   'PostgreSQL',
   'MongoDB',
-  'Docker',
-  'Git',
+  'Redis',
+  'SQLAlchemy',
+  'Pydantic',
   'SCSS',
+  'CSS',
+  'HTML',
   'Axios',
   'Redux',
   'GraphQL',
+  'REST API',
+  'GO',
+  'Java',
+  'C++',
+  'C#',
+  'PHP',
+  'Ruby',
+  'Rust',
+  'Kotlin',
+  'Swift',
+  'TensorFlow',
+  'PyTorch',
+  'AWS',
+  'Azure',
+  'Kubernetes',
+]
+
+const ROLE_OPTIONS = [
+  'Фронтенд разработчик',
+  'Бэкенд разработчик',
+  'Fullstack разработчик',
+  'DevOps инженер',
+  'Мобильный разработчик',
+  'Data Scientist',
+  'ML инженер',
+  'QA инженер',
+  'UI/UX дизайнер',
+  'Product Manager',
+  'Другое',
 ]
 
 type ProfileEditFormProps = {
@@ -42,11 +78,20 @@ export const ProfileEditForm = ({ participantId, onSuccess }: ProfileEditFormPro
   const [customSkill, setCustomSkill] = useState('')
 
   const queryClient = useQueryClient()
+  const { telegramId, isAuthenticated } = useUser()
 
   const { data: participant, isLoading } = useQuery({
-    queryKey: ['participant', participantId || 'current'],
-    queryFn: () => (participantId ? participantService.getById(participantId) : participantService.getCurrent()),
-    enabled: true,
+    queryKey: ['participant', participantId || telegramId || 'current'],
+    queryFn: () => {
+      if (participantId) {
+        return participantService.getById(participantId)
+      }
+      if (telegramId) {
+        return participantService.getCurrent(telegramId)
+      }
+      throw new Error('telegramId is required to load current user')
+    },
+    enabled: !!(participantId || telegramId),
   })
 
   useEffect(() => {
@@ -61,8 +106,15 @@ export const ProfileEditForm = ({ participantId, onSuccess }: ProfileEditFormPro
   }, [participant])
 
   const mutation = useMutation({
-    mutationFn: (data: UpdateParticipantDto) =>
-      participantId ? participantService.update(participantId, data) : participantService.updateCurrent(data),
+    mutationFn: (data: UpdateParticipantDto) => {
+      if (participantId) {
+        return participantService.update(participantId, data)
+      }
+      if (telegramId) {
+        return participantService.updateCurrent(telegramId, data)
+      }
+      throw new Error('telegramId is required to update current user')
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['participant'] })
       onSuccess?.()
@@ -71,9 +123,17 @@ export const ProfileEditForm = ({ participantId, onSuccess }: ProfileEditFormPro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('ProfileEditForm: Отправка данных', formData)
     mutation.mutate({
       ...formData,
       updatedAt: new Date().toISOString(),
+    }, {
+      onSuccess: (data) => {
+        console.log('ProfileEditForm: Данные успешно сохранены', data)
+      },
+      onError: (error) => {
+        console.error('ProfileEditForm: Ошибка при сохранении', error)
+      }
     })
   }
 
@@ -134,13 +194,29 @@ export const ProfileEditForm = ({ participantId, onSuccess }: ProfileEditFormPro
           <label className={styles.profileEdit__label}>
             Роль в команде <span className={styles.profileEdit__required}>*</span>
           </label>
-          <input
-            type="text"
+          <select
             value={formData.role || ''}
             onChange={(e) => setFormData((prev) => ({ ...prev, role: e.target.value }))}
-            className={styles.profileEdit__input}
-            placeholder="Например: Фронтенд разработчик"
+            className={styles.profileEdit__select}
             required
+          >
+            <option value="">-- Выберите роль --</option>
+            {ROLE_OPTIONS.map((role) => (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.profileEdit__field}>
+          <label className={styles.profileEdit__label}>О себе</label>
+          <textarea
+            value={formData.bio || ''}
+            onChange={(e) => setFormData((prev) => ({ ...prev, bio: e.target.value }))}
+            className={styles.profileEdit__textarea}
+            placeholder="Расскажите о себе, своих интересах и опыте"
+            rows={5}
           />
         </div>
 
@@ -217,33 +293,30 @@ export const ProfileEditForm = ({ participantId, onSuccess }: ProfileEditFormPro
           )}
         </div>
 
-        <div className={styles.profileEdit__field}>
-          <label className={styles.profileEdit__label}>О себе</label>
-          <textarea
-            value={formData.bio || ''}
-            onChange={(e) => setFormData((prev) => ({ ...prev, bio: e.target.value }))}
-            className={styles.profileEdit__textarea}
-            placeholder="Расскажите о себе, своих интересах и опыте"
-            rows={5}
-          />
-        </div>
-
-        <div className={styles.profileEdit__actions}>
-          <button
-            type="submit"
-            disabled={mutation.isPending}
-            className={`${styles.profileEdit__button} ${styles.profileEdit__button_primary}`}
-          >
-            {mutation.isPending ? (
-              <>
-                <span className={styles.profileEdit__spinner}></span>
-                Сохранение...
-              </>
-            ) : (
-              'Сохранить изменения'
-            )}
-          </button>
-        </div>
+        {isAuthenticated && (
+          <div className={styles.profileEdit__actions}>
+            <button
+              type="submit"
+              disabled={mutation.isPending}
+              className={`${styles.profileEdit__button} ${styles.profileEdit__button_primary}`}
+            >
+              {mutation.isPending ? (
+                <>
+                  <span className={styles.profileEdit__spinner}></span>
+                  Сохранение...
+                </>
+              ) : (
+                'Сохранить изменения'
+              )}
+            </button>
+          </div>
+        )}
+        
+        {!isAuthenticated && (
+          <div className={styles.profileEdit__notAuthenticated}>
+            <p>Для сохранения изменений необходимо войти в систему</p>
+          </div>
+        )}
 
         {mutation.isError && (
           <div className={styles.profileEdit__error}>
