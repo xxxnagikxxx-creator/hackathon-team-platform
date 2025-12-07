@@ -9,7 +9,6 @@ import styles from './AdminPanel.module.scss'
 
 export const AdminPanel = () => {
   const { isAuthenticated, isLoading, logout, checkAuth } = useAdmin()
-  const [showLogin, setShowLogin] = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [editingHackathon, setEditingHackathon] = useState<Hackathon | null>(null)
   const queryClient = useQueryClient()
@@ -30,11 +29,6 @@ export const AdminPanel = () => {
     checkAuth()
   }, [checkAuth])
 
-  useEffect(() => {
-    if (!isLoading) {
-      setShowLogin(!isAuthenticated)
-    }
-  }, [isAuthenticated, isLoading])
 
   const handleLogout = async () => {
     try {

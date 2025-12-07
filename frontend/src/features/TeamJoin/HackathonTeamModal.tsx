@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { teamService } from '../../entities/Team'
-import { useUser } from '../../app/providers/UserProvider'
 import { useNavigate } from 'react-router-dom'
 import styles from './HackathonTeamModal.module.scss'
 import closeIcon from '../../shared/assets/icons/closeicon.png'

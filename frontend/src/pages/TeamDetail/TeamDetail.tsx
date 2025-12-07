@@ -18,7 +18,7 @@ export const TeamDetail = () => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
 
-  const { data: team, isLoading, error } = useQuery({
+  const { data: team, isLoading } = useQuery({
     queryKey: ['team', id],
     queryFn: () => {
       console.log('TeamDetail: Loading team with id:', id)
@@ -146,8 +146,9 @@ export const TeamDetail = () => {
 
   // Объединяем капитана и участников
   const allMembers = [team.captain, ...team.participants]
-  const isCaptain = team.captain.tgTag === user?.tgTag || team.captain.id === user?.id
-  const isMember = allMembers.some(m => m.tgTag === user?.tgTag || m.id === user?.id)
+  // Проверяем, является ли пользователь капитаном или участником
+  const isCaptain = team.captain.id === user?.id
+  const isMember = allMembers.some(m => m.id === user?.id)
   const canLeave = isMember && !isCaptain && allMembers.length > 1
 
   return (

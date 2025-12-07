@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
-import { apiClient } from '../../../shared/config/api'
 import { adminAuthService } from '../../../features/AdminAuth/adminAuthService'
 
 type AdminContextType = {

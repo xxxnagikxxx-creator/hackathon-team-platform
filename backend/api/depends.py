@@ -1,9 +1,10 @@
 from fastapi import Cookie, Depends, HTTPException, Response, Path, Header
-from typing import Annotated
+from typing import Annotated, Any
 from backend.api.admin.models import Admin
 from backend.api.config import settings
 from backend.api.database import get_db
 from backend.api.teams.service import get_team_by_id
+from backend.api.teams.models import Team
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
@@ -117,3 +118,13 @@ async def verify_captain_access(
     
     return current_telegram_id
 
+
+async def get_team_by_id_dependency(
+    team_id: Annotated[int, Path()],
+    session: AsyncSession = Depends(get_db),
+) -> Team:
+    """Зависимость для получения команды по ID с проверкой существования"""
+    team = await get_team_by_id(session=session, team_id=team_id)
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    return team

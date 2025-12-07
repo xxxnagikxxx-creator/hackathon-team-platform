@@ -8,8 +8,8 @@ if TYPE_CHECKING:
 
 class UserInfo(BaseModel):
     telegram_id: str
-    fullname: str  # Оставляем для обратной совместимости, но используем username для отображения
-    username: Optional[str] = None  # Добавляем username
+    fullname: str
+    username: Optional[str] = None
     pic: str
     role: Optional[str] = None
     description: Optional[str] = None
@@ -21,7 +21,7 @@ class UserInfo(BaseModel):
 class UserUpdate(BaseModel):
     role: Optional[str] = None
     fullname: Optional[str] = None
-    username: Optional[str] = None  # Добавляем username
+    username: Optional[str] = None
     description: Optional[str] = None
     tags: Optional[List[str]] = None
 

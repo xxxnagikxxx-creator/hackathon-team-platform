@@ -46,7 +46,9 @@ apiClient.interceptors.response.use(
 // Interceptor для логирования запросов
 apiClient.interceptors.request.use(
   (config) => {
-    console.log('API Request:', config.method?.toUpperCase(), config.baseURL + config.url, config.data)
+    const method = config.method?.toUpperCase() || 'UNKNOWN'
+    const url = (config.baseURL || '') + (config.url || '')
+    console.log('API Request:', method, url, config.data)
     return config
   },
   (error) => {

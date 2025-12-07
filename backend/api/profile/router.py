@@ -1,10 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-import logging
-
 from backend.api.database import get_db
-
-logger = logging.getLogger(__name__)
 from backend.api.profile.schemas import UserInfo, UserUpdate
 from backend.api.profile.service import get_user_info_by_telegram_id, all_users_info, update_user_info
 from backend.api.depends import get_current_telegram_id, check_user_editable

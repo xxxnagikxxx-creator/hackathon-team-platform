@@ -39,9 +39,7 @@ async def all_hacks_info(
                         max_participants=getattr(hack, 'max_participants', None)
                     ))
                 except Exception as e:
-                    # Если не удалось обработать один хакатон, пропускаем его
                     continue
-        
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching hackathons: {str(e)}")
@@ -52,10 +50,8 @@ async def hack_info(
     session: AsyncSession = Depends(get_db),
 ) -> HackInfo:
     hack = await get_hack_by_id(session=session, hack_id=hack_id)
-
     if not hack:
         raise HTTPException(status_code=404, detail="Hack not found")
-
     return HackInfo(
         hack_id=hack.hack_id,
         title=hack.title or "",
@@ -82,7 +78,6 @@ async def update_hack_info(
     hack = await get_hack_by_id(session=session, hack_id=hack_id)
     if not hack:
         raise HTTPException(status_code=404, detail="Hack not found or already deleted")
-
     hack = await update_hack(
         session=session,
         hack=hack,
@@ -95,7 +90,6 @@ async def update_hack_info(
         location=data.location,
         max_participants=data.max_participants,
     )
-
     return HackInfo(
         hack_id=hack.hack_id,
         title=hack.title or "",
@@ -108,6 +102,7 @@ async def update_hack_info(
         participants_count=hack.participants_count or 0,
         max_participants=getattr(hack, 'max_participants', None)
     )
+
 
 
 @router.post("/{hack_id}/delete_hack")
@@ -124,7 +119,6 @@ async def delete_hack_info(
     await delete_hack(session=session, hack=hack)
 
     return {"message": "Успешно удалено"}
-
 
 
 @router.post("/create_hack", response_model=HackInfo)

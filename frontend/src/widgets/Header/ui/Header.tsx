@@ -12,7 +12,6 @@ import { useAdmin } from '../../../app/providers/AdminProvider'
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { isAuthenticated, user, telegramId, logout } = useUser()
-  const { isAuthenticated: isAdminAuthenticated } = useAdmin()
 
   function openAuth() {
     setIsOpen(true)

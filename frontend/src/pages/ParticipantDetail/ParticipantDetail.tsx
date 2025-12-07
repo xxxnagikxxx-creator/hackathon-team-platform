@@ -33,7 +33,8 @@ export const ParticipantDetail = () => {
   }
 
   if (error || !participant) {
-    const errorMessage = error?.response?.status === 404 
+    const axiosError = error as any
+    const errorMessage = axiosError?.response?.status === 404 
       ? 'Участник не найден. Возможно, вы еще не зарегистрированы в системе. Пожалуйста, зарегистрируйтесь через Telegram бота.'
       : 'Ошибка загрузки данных участника'
     

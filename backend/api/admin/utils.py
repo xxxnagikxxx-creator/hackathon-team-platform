@@ -13,22 +13,15 @@ def create_admin_access_token(data: dict):
 
 
 def _prepare_password(password: str) -> bytes:
-    """
-    Подготовка пароля для bcrypt.
-    Если пароль длиннее 72 байт, применяем SHA-256 хеширование для обхода ограничения bcrypt.
-    """
     password_bytes = password.encode('utf-8')
     
     if len(password_bytes) > 72:
-        # Используем SHA-256 для длинных паролей, чтобы обойти ограничение bcrypt в 72 байта
-        # Это стандартный подход для работы с длинными паролями
         return hashlib.sha256(password_bytes).digest()
     
     return password_bytes
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Проверка пароля"""
     try:
         password_bytes = _prepare_password(plain_password)
         hash_bytes = hashed_password.encode('utf-8') if isinstance(hashed_password, str) else hashed_password
@@ -39,7 +32,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def hash_password(password: str) -> str:
-    """Хеширование пароля без ограничения длины"""
     password_bytes = _prepare_password(password)
     hashed = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
     return hashed.decode('utf-8')
