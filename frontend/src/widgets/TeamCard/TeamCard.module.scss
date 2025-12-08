@@ -79,6 +79,9 @@
     
     @media (min-width: 768px) {
       font-size: 14px;
+    }
+  }
+
   &__wrapper {
     background-color: #fff;
     border-radius: 16px;
@@ -105,6 +108,7 @@
         transform: translateY(-3px);
       }
     }
+  }
 
   &__hackathonLabel {
     font-weight: 500;
@@ -147,8 +151,6 @@
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
-      margin: 0 0 20px 0;
-    }
   }
 
   &__meta {
@@ -242,7 +244,6 @@
     flex-wrap: wrap;
     gap: 8px;
   }
-}
 
   &__viewDetails {
     font-size: 13px;
@@ -340,11 +341,6 @@
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
 @keyframes fadeInUp {
   from {
     opacity: 0;
