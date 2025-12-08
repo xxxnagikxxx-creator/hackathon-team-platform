@@ -114,7 +114,7 @@ export const AuthBlock = ({ closeAuth }: Props) => {
             </button>
           </form>
           <p className={styles.auth__desc_bot}>
-            Напишите <a href="https://t.me/MopsMopsMops_bot" target="_blank" rel="noopener noreferrer">бот</a>, чтобы получить код
+            Напишите <a href="https://t.me/MopsMopsMopsMops_bot" target="_blank" rel="noopener noreferrer">бот</a>, чтобы получить код
           </p>
         </div>
       </div>
