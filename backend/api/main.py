@@ -26,14 +26,25 @@ from backend.api.teams.schemas import TeamInfo, ShortTeamInfo
 UserInfo.model_rebuild()
 TeamInfo.model_rebuild()
 
+# CORS origins - добавляем продакшен домены
+cors_origins = [
+    "http://localhost:5175",
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://89.169.160.161",
+    "http://89.169.160.161:80",
+    "http://89.169.160.161:8000",
+]
+
+# Добавляем origins из переменной окружения, если есть
+import os
+if os.getenv("CORS_ORIGINS"):
+    cors_origins.extend(os.getenv("CORS_ORIGINS").split(","))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5175",
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
