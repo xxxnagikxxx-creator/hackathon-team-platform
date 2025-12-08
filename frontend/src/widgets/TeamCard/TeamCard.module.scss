@@ -1,4 +1,192 @@
 .teamCard {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  animation: fadeInUp 0.5s ease backwards;
+  will-change: transform;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  
+  @media (min-width: 480px) {
+    border-radius: 20px;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    
+    @media (max-width: 767px) {
+      transform: translateY(-3px);
+    }
+  }
+
+  &:active {
+    transform: translateY(-2px) scale(0.98);
+    transition: all 0.1s ease;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  &__name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+    word-wrap: break-word;
+    flex: 1;
+    
+    @media (min-width: 768px) {
+      font-size: 20px;
+    }
+  }
+
+  &__info {
+    font-size: 13px;
+    color: #64748b;
+    white-space: nowrap;
+    
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+  }
+
+  &__hackathon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #64748b;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #3b82f6;
+    }
+    
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+  }
+
+  &__hackathonLabel {
+    font-weight: 500;
+  }
+
+  &__hackathonName {
+    color: #3b82f6;
+    font-weight: 600;
+  }
+
+  &__description {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+    word-wrap: break-word;
+    
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+  }
+
+  &__members {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  &__membersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__member {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__memberAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+    
+    @media (min-width: 768px) {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  &__memberName {
+    font-size: 12px;
+    color: #0f172a;
+    font-weight: 500;
+    
+    @media (min-width: 768px) {
+      font-size: 13px;
+    }
+  }
+
+  &__moreMembers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    
+    @media (min-width: 768px) {
+      width: 40px;
+      height: 40px;
+      font-size: 13px;
+    }
+  }
+
+  &__footer {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  &__viewDetails {
+    font-size: 13px;
+    color: #3b82f6;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #2563eb;
+    }
+    
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+  }
+
+  // Legacy classes for backward compatibility
   &__wrapper {
     background-color: #fff;
     border-radius: 16px;
@@ -45,19 +233,6 @@
     }
   }
 
-  &__description {
-    font-size: 13px;
-    color: #64748b;
-    margin: 0 0 16px 0;
-    line-height: 1.6;
-    word-wrap: break-word;
-    
-    @media (min-width: 768px) {
-      font-size: 14px;
-      margin: 0 0 20px 0;
-    }
-  }
-
   &__meta {
     display: flex;
     flex-direction: column;
@@ -78,12 +253,6 @@
     }
   }
 
-  &__members {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #e2e8f0;
-  }
-
   &__membersTitle {
     font-size: 13px;
     font-weight: 600;
@@ -94,12 +263,6 @@
       font-size: 14px;
       margin: 0 0 16px 0;
     }
-  }
-
-  &__membersList {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
   }
 }
 

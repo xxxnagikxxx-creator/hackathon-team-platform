@@ -32,7 +32,10 @@ export const AdminLoginForm = ({ closeAuth }: Props) => {
     setIsLoading(true)
 
     try {
+      // Выполняем логин на бэкенде
       await adminAuthService.login(email, password)
+      
+      // Устанавливаем статус авторизации
       await login()
       
       setIsLoading(false)

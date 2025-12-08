@@ -17,10 +17,8 @@ export const adminAuthService = {
   async login(email: string, password: string): Promise<AdminLoginResponse> {
     console.log('adminAuthService.login: Отправка запроса на /admin/login')
     try {
-      // Normalize email: trim and convert to lowercase
-      const normalizedEmail = email.trim().toLowerCase()
       const response = await apiClient.post<AdminLoginResponse>('/admin/login', {
-        email: normalizedEmail,
+        email: email.trim().toLowerCase(),
         password: password,
       })
       console.log('adminAuthService.login: Успешный ответ:', response.data)

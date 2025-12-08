@@ -57,7 +57,12 @@ function AppRouter() {
   }
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
+    console.log('toggleMenu called, current state:', isMenuOpen)
+    setIsMenuOpen(prev => {
+      const newState = !prev
+      console.log('Setting menu state to:', newState)
+      return newState
+    })
   }
 
   return (

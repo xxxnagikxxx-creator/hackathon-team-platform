@@ -60,6 +60,7 @@
     flex: 1;
     min-width: 0;
     margin-right: 12px;
+    flex-shrink: 0;
     
     @media (min-width: 768px) {
       flex: 0;
@@ -68,13 +69,21 @@
   }
 
   &__logo {
-    height: 50px;
+    height: 40px;
     width: auto;
-    max-width: 100%;
+    max-width: 200px;
     object-fit: contain;
+    display: block;
+    flex-shrink: 0;
     
     @media (min-width: 768px) {
       height: 50px;
+      max-width: none;
+    }
+    
+    @media (max-width: 480px) {
+      height: 32px;
+      max-width: 150px;
     }
   }
 

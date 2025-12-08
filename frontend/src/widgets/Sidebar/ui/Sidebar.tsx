@@ -16,14 +16,28 @@ export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
 
   // Закрываем меню при изменении маршрута на мобильных
   useEffect(() => {
-    if (window.innerWidth <= 767 && onClose) {
+    if (window.innerWidth <= 767 && onClose && isOpen) {
       onClose()
     }
-  }, [location.pathname, onClose])
+  }, [location.pathname])
+
+  // Отладка для проверки состояния
+  useEffect(() => {
+    if (window.innerWidth <= 767) {
+      console.log('Sidebar isOpen:', isOpen, 'window width:', window.innerWidth)
+      const sidebarElement = document.querySelector(`.${styles.sidebar}`)
+      if (sidebarElement) {
+        console.log('Sidebar element classes:', sidebarElement.className)
+        console.log('Sidebar computed transform:', window.getComputedStyle(sidebarElement).transform)
+      }
+    }
+  }, [isOpen, styles.sidebar])
 
   return (
     <>
-      <aside className={`${styles.sidebar} ${isOpen ? styles.mobileOpen : ''}`}>
+      <aside 
+        className={`${styles.sidebar} ${isOpen ? styles.mobileOpen : ''}`}
+      >
         <nav className={styles.sidebar__nav}>
           <ul className={styles.sidebar__list}>
             <li>

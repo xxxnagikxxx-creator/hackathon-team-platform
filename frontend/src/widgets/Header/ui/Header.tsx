@@ -61,7 +61,15 @@ export const Header = ({ onMenuToggle, isMenuOpen }: HeaderProps) => {
         )}
 
         <NavLink to="/" className={styles.header__logoLink}>
-          <img src={logo} alt="Fullstack Fusion" className={styles.header__logo} />
+          <img 
+            src={logo} 
+            alt="Fullstack Fusion" 
+            className={styles.header__logo}
+            onError={(e) => {
+              console.error('Ошибка загрузки логотипа:', e);
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
         </NavLink>
 
         <div className={styles.header__icons}>
