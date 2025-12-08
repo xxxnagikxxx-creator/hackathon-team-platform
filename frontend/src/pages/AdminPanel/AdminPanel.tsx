@@ -110,7 +110,7 @@ export const AdminPanel = () => {
       <div className={styles.adminPanel}>
         <div className={styles.adminPanel__login}>
           <AdminLoginForm closeAuth={() => {
-            // setShowLogin(false) // This line was removed as per the edit hint
+            // Пустая функция для соответствия интерфейсу
           }} />
         </div>
       </div>

@@ -3,12 +3,11 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 # Копируем исходный код
 COPY . .
 
-# Собираем приложение
 RUN npm run build
 
 # Production stage
