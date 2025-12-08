@@ -2,9 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // Определяем, где запущен бэкенд
-// По умолчанию используем localhost:8000 (бэкенд проброшен на этот порт)
-// Если фронтенд запущен в Docker, можно переопределить через переменную окружения API_PROXY_TARGET=http://backend:8000
-const backendUrl = process.env.API_PROXY_TARGET || 'http://backend:8000'
+// Для разработки можно использовать локальный или реальный сервер
+const backendUrl = process.env.API_PROXY_TARGET || 'http://89.169.160.161'
 
 export default defineConfig({
   plugins: [react()],
@@ -13,10 +12,24 @@ export default defineConfig({
       '/api': {
         target: backendUrl,
         changeOrigin: true,
-        // Не убираем префикс /api, так как бэкенд ожидает его в роутерах
+        // Если бэкенд ожидает /api в пути - не используем rewrite
+        // Если бэкенд НЕ ожидает /api - используем rewrite
+        // rewrite: (path) => path.replace(/^\/api/, ''),
         cookieDomainRewrite: 'localhost',
         secure: false,
-        ws: true, // для WebSocket поддержки, если нужно
+        ws: true,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('Proxy error:', err);
+          });
+          // Исправляем: добавляем префикс _ к неиспользуемым параметрам
+          proxy.on('proxyReq', (_proxyReq, req, _res) => {
+            console.log('Sending Request to the Target:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+          });
+        },
       },
     },
   },

@@ -1,0 +1,33 @@
+.teams {
+
+  &__wrapper {
+    margin-top: 40px;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  &__item {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    border-radius: 26px;
+    background-color: #F5F5F5;
+
+    &:hover {
+      background-color: #C8F133;
+    }
+
+    &:active {
+      background-color: #a1bb42;
+    }
+  }
+
+  &__arrow {
+    width: 43px;
+    height: 43px;
+  }
+}

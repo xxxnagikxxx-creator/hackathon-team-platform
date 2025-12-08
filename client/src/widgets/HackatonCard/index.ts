@@ -1,0 +1,1 @@
+export { HackatonCard } from "./ui/HackatonCard"

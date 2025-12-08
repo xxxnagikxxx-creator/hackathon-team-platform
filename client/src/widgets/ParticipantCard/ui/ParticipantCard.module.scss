@@ -1,0 +1,149 @@
+.participant {
+  background-color: #FFF;
+  width: 100%;
+  max-width: 320px;
+  min-height: 280px;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  
+  &[style*="pointer"] {
+    cursor: pointer;
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  &__avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    flex-shrink: 0;
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #C8F133;
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  &__name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__role {
+    font-size: 16px;
+    font-weight: 500;
+    color: #0f172a;
+    margin: 0 0 12px 0;
+    text-align: center;
+    min-height: 24px;
+  }
+
+  &__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+    justify-content: center;
+    min-height: 60px;
+    flex: 1;
+  }
+
+  &__stack_tag {
+    padding: 6px 12px;
+    border-radius: 16px;
+    background-color: #F5F5F5;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  &__noSkills {
+    font-size: 12px;
+    color: #94a3b8;
+    text-align: center;
+    padding: 8px;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  &__actionBtn {
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+
+    &:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    &_primary {
+      background-color: #C8F133;
+      border-color: #C8F133;
+      color: #0f172a;
+
+      &:hover {
+        background-color: #b3d92e;
+        border-color: #b3d92e;
+      }
+    }
+  }
+
+  &__telegramBtn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+  }
+}

@@ -1,0 +1,3 @@
+export { HackathonDetail } from './HackathonDetail'
+
+
